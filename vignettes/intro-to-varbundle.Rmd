@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-VarBundles make it easy for R developers to bundle multiple, conceptually related read-only variables -- in essence, a named, list-like object of unmutable constants. 
+VarBundles make it easy for R developers to bundle conceptually related read-only variables in a list-like object of unmutable constants. 
 
 ### Rationale and Approach
 The VarBundle package grew out of frustration with perceived shortcomings in the R language that hinder its utility for developing robust, easily refactorable and debuggable code written in a multi-developer environment.
@@ -81,7 +81,7 @@ adjust_inventory <- function(prod, units) {
 
 # Oh No! team member unknowingly changes value
 
-# inventory_thresholds$min <- 90 ## ERROR THROWN HERE
+inventory_thresholds$min <- 90 ## ERROR THROWN HERE
 
 ## "VarBundle fields are read only."
 
@@ -134,12 +134,12 @@ is.null(thresholds$foobar)
 
 ### Modification
 Once a VarBundle object has been created, its fields cannot be modified - assignment causes an error to be thrown.
-```{r}
-#thresholds$min <- 25
+```{r, eval=F, echo=T}
+thresholds$min <- 25
 ```
 New fields cannot be added to an existing VarBundle object. This too will throw an error.
-```{r}
-#thresholds$new_min <- 25
+```{r, eval=F, echo=T}
+thresholds$new_min <- 25
 ```
 
 
