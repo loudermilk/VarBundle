@@ -1,0 +1,221 @@
+---
+title: "Intro to VarBundle"
+author: "Brandon C. Loudermilk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+<img src="images/varbundle.png" align="center" height="300"/>
+
+> "The basic principle of defensive programming is to “fail fast”, to raise an error as soon as something goes wrong." - Hadley Wickham ([Advanced R](http://adv-r.had.co.nz/Exceptions-Debugging.html))
+
+## Introduction
+
+VarBundles make it easy for R developers to bundle multiple, conceptually related read-only variables -- in essence, a named, list-like object of unmutable constants. 
+
+### Rationale and Approach
+The VarBundle package grew out of frustration with perceived shortcomings in the R language that hinder its utility for developing robust, easily refactorable and debuggable code written in a multi-developer environment.
+
+While developing complex software systems (e.g., data science pipelines, business applications) it is often necessary to access the value of the same variable(s) across multiple functions. Common examples include: file paths, execution flags, default values, and business thresholds. As the number of variables increases, it becomes increasingly difficult to maintain and understand the code base; Function interfaces become more complex and code logic becomes difficult to understand if variables are not appropriately grouped into conceptually/functionally related units.
+
+One common solution in R, is to store related variable/value pairs in a structure like a list or environment. This approach is useful because it allows conceptually related variables to be bundled together and assigned a single, reflective variable name (e.g., `sales_thresholds`). Components of the list can be accessed via the `$` operator and tab-completion further reduces cognitive burden and minimizes typos. The fundamental drawback of this approach, however, is that nothing prevents a team member (or your future self) from unintentionally overwriting list values. Unfortunately, this approach introduce pernicious logical, runtime bugs and reduces the robustness and utility of this approach for developing production-ready systems.
+
+The "list" approach with its associated drawbacks is illustrated in the code below. Here, the primary developer has encoded important variables into a `inventory_thresholds` list, which can then be accessed across the code base. For example, the `adjust_inventory()` function tests whether the passed in product has sufficient units or if more product should be ordered. However, elsewhere in the code, the `inventory_thresholds` list member is unknowingly modified (`inventory_thresholds$min <- 90`). Strange, unexpected behavior may be elicited throughout the system, and in the case of fully automated system it may be some time until a user even detects that there is a problem. 
+
+```{r}
+## approach using lists
+inventory_thresholds <- list(min = 50, max = 100)
+
+## ... more code
+
+adjust_inventory <- function(prod, units) {
+  if (units < inventory_thresholds$min) { # low inventory
+    "low inventory: order more product"
+  } else {
+    "inventory good"
+  }
+}
+
+# ... lots more code
+
+inventory_thresholds$min <- 90 # Oh No! team member unknowingly changes value
+
+# ... additional code
+
+## Runtime, logical bug
+adjust_inventory("widgets", units = 60) 
+## expect: "inventory good"
+## received: "low inventory: order more product"
+
+```
+
+Tracking down logical, runtime bugs such as the one illustrated above, is both costly and frustrating. VarBundle objects can help reduce these type of logical, runtime bugs by providing a list-like structure of read-only fields. Once a VarBundle object has been created, variable values and names cannot be changed. In spirit, the VarBundle functions as dictionary of constants.
+
+```{r, eval=F, echo=T}
+library("VarBundle")
+
+## approach using VarBundle
+inventory_thresholds <- varbundle(list(min = 50, max = 100))
+
+## ... more code
+
+adjust_inventory <- function(prod, units) {
+  if (units < inventory_thresholds$min) { # low inventory
+    "low inventory: order more product"
+  } else {
+    "inventory good"
+  }
+}
+
+# ... lots more code
+
+# Oh No! team member unknowingly changes value
+
+# inventory_thresholds$min <- 90 ## ERROR THROWN HERE
+
+## "VarBundle fields are read only."
+
+# ... additional code
+
+adjust_inventory("widgets", units = 60) ## NO LOGICAL BUG
+```
+Now, if a team member attempts to change the value of `inventory_thresholds$min`, when the code is sourced or run, it will **throw an error at the offending line, not elicit a logical runtime bug elsewhere in the code**. VarBundle objects facilitate defensive programming by helping you write code that avoids  common problems before they occur. By throwing an error as soon as a problem is detected, VarBundles help you write robust, production-worthy code, and reduce the time you spend debugging.
+
+## The Basics
+
+### Creation
+
+The easiest way to create a VarBundle object is to call function `varbundle()` passing in a named list of values. 
+
+
+```{r}
+library("VarBundle")
+thresholds <- varbundle(list(min = 1, max = 10))
+```
+If you already have existing code that uses the "list" approach discussed above, {VarBundle} makes it relatively easy to transform your existing code by passing your list to the `varbundle()` constructor.
+
+```{r}
+file_paths <- list(data_in = "./foo/bar/data.csv", 
+                   data_out = "./foo/bar/out.csv")
+# transform existing list to VarBundle
+file_paths <- varbundle(file_paths)
+class(file_paths)
+```
+
+
+### Access
+Just like a list, you can access VarBundle fields via the `$` operator.
+```{r}
+thresholds$max
+```
+
+Like a list, you can also dynamically access its value via a variable and double-bracket syntax.
+```{r}
+t1 <- "min"
+
+thresholds[[t1]]
+```
+
+
+If you attempt to access a non-existent field returns NULL.
+```{r}
+is.null(thresholds$foobar)
+```
+
+### Modification
+Once a VarBundle object has been created, its fields cannot be modified - assignment causes an error to be thrown.
+```{r}
+#thresholds$min <- 25
+```
+New fields cannot be added to an existing VarBundle object. This too will throw an error.
+```{r}
+#thresholds$new_min <- 25
+```
+
+
+### Permissable Values
+VarBundle objects can be created with any type of value. Basically anything you can store in a list can also be stored in a VarBundle.
+
+#### Atomic Types
+```{r}
+# integers
+vb_int <- varbundle(list(a = 1L, b = 2L))
+# doubles
+vb_dbl <- varbundle(list(a = 1.5, b = 2.1))
+#characters
+vb_char <- varbundle(list(a = "foo", b = "bar"))
+#logical
+vb_log <- varbundle(list(a = TRUE, b = FALSE))
+
+```
+#### Mixed Types
+```{r}
+vb_mix <- varbundle(list(a = 1L, b = 2.1, c = "foo", d = TRUE))
+```
+#### Vectors
+```{r}
+vb_vec <- varbundle(list(nums = 1:10, colors = c("red", "green")))
+vb_vec$colors
+```
+#### Data.frames
+```{r}
+vb_df <- varbundle(list(df = data.frame(a = 1:10, b = 11:20)))
+vb_df$df
+```
+#### Other VarBundles
+```{r}
+units <- varbundle(list(min = 1, max = 100))
+sales <- varbundle(list(min = 10000, max = 500000))
+thresholds <- varbundle(list(units = units, sales = sales))
+thresholds$sales$min
+```
+## Advanced
+
+### VarBundles for System Configuration
+
+VarBundles make it easy to encode and store system configuration information. "Simple" VarBundles are VarBundles that consist of only atomic, scalar values (i.e. no "complex" items such as lists or data.frames).
+```{r}
+simple_vb <- varbundle(list(user_id = "doe.john", 
+                            role = "admin", 
+                            max_resources = 25))
+
+complex_vb <- varbundle(list(data = data.frame(a = 1:10, b = letters[1:10])))
+```
+Simple VarBundles provide a `as.data.frame` method that returns a data.frame representation of the VarBundle. 
+```{r}
+simple_vb$as.data.frame()
+```
+
+This makes it easy to store (and possibly modify) configuration information. The `varbundle` constructor function can create a VarBundle from the stored data.frame repesentation.
+```{r}
+config_file <- "user_config.csv"
+df <- simple_vb$as.data.frame()
+readr::write_csv(df, config_file)
+
+new_vb <- varbundle(readr::read_csv(config_file, )) 
+new_vb
+```
+Complex VarBundle objects return `NULL` if `as.data.frame` is called.
+```{r}
+df <- complex_vb$as.data.frame()
+is.null(df)
+```
+
+### Additional Methods
+
+#### length
+Method `$length()` - Returns the number of variables in a VarBundle
+```{r}
+vb <- varbundle(list(a = 1, b = 2, c = 3))
+vb$length()
+```

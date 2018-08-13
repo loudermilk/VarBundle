@@ -1,0 +1,20 @@
+Package: VarBundle
+Type: Package
+Title: Read-Only Variable/Value Bundles
+Version: 0.1.0.9001
+Author: Brandon C. Loudermilk
+Maintainer: Brandon C. Loudermilk <b.c.loudermilk@gmail.com>
+Description: Easily create list-like structures with constant, read-only values.
+License: MIT + file LICENSE 
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Imports: R6,
+    glue,
+    tibble,
+    readr
+Suggests: testthat,
+    purrr,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
