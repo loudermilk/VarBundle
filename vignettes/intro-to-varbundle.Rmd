@@ -197,7 +197,7 @@ simple_vb$as.data.frame()
 ```
 
 This makes it easy to store (and possibly modify) configuration information. The `varbundle` constructor function can create a VarBundle from the stored data.frame repesentation.
-```{r}
+```{r, eval=F, echo=T}
 config_file <- "user_config.csv"
 df <- simple_vb$as.data.frame()
 readr::write_csv(df, config_file)

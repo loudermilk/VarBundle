@@ -74,6 +74,8 @@ varbundle <- function(x) {
   # Return number of read-only fields
   VarBundle$set("public", "length", function() length(VarBundle$active))
 
+
+
   # Transform simple VarBundle to data.frame
   VarBundle$set("public", "as.data.frame", function() {
     if (is.null(private$.df_rep)) {

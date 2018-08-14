@@ -1,7 +1,7 @@
 Package: VarBundle
 Type: Package
 Title: Read-Only Variable/Value Bundles
-Version: 0.1.0
+Version: 0.2.0
 Author: Brandon C. Loudermilk
 Maintainer: Brandon C. Loudermilk <b.c.loudermilk@gmail.com>
 Description: Easily create list-like structures with constant, read-only values.
@@ -12,7 +12,10 @@ RoxygenNote: 6.0.1
 Imports: R6,
     glue,
     tibble,
-    readr
+    readr,
+    magrittr,
+    dplyr,
+    stringr
 Suggests: testthat,
     purrr,
     knitr,

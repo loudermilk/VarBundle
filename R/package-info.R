@@ -6,4 +6,6 @@
 #'
 #' @docType package
 #' @name VarBundle
+#' @importFrom magrittr "%>%"
+#' @import dplyr
 NULL
