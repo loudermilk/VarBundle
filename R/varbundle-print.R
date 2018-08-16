@@ -10,7 +10,7 @@ indent <- function(str, indent = 0) {
 
 # Trim a string to n characters; if it's longer than n, add " ..." to the end
 trim <- function(str, n = 60) {
-  if (nchar(str) > n) paste(substr(str, 1, n-4), "...")
+  if (nchar(str) > n) paste(substr(str, 1, n - 4), "...")
   else str
 }
 
@@ -79,19 +79,25 @@ extract_field_vals <- function(x, field_names) {
   }
 }
 
+
+#' @title Names of VarBundle
+#' @description Returns field names of VarBundle Object
+#' @param x (VarBundle)
+#' @return (character vector)
 #' @export
-names.VarBundle <- function(x) {
+field_names <- function(x) {
   extract_field_names(x)
 }
 
 
-format.VarBundle <- function(x, ...) {
 
+format.VarBundle <- function(x, ...) {
+  class_fmt <- red$bold
 
   if (is.function(.subset2(x, "format"))) {
     .subset2(x, "format")(...)
   } else {
-    ret <- paste0("<", class(x)[1], ">")
+    ret <- class_fmt(paste0("<", class(x)[1], ">"))
 
     # If there's another class besides first class and R6
     classes <- setdiff(class(x), "R6")
@@ -110,6 +116,10 @@ format.VarBundle <- function(x, ...) {
   }
 }
 
+#' @title Print VarBundle
+#' @description Prints a VarBundle object.
+#' @param x (VarBundle)
+#' @param ... (additional args)
 #' @export
 print.VarBundle <- function(x, ...) {
   ret <- format.VarBundle(x, ...)

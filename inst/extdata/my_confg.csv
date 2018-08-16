@@ -1,6 +1,0 @@
-var,val,type
-a,1,numeric
-b,foo,character
-c,TRUE,logical
-min_sales,25,numeric
-max_sales,1000,numeric

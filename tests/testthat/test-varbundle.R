@@ -1,6 +1,8 @@
 
 # vb has same values as list ll
 same_vals_test <- function(vb, ll) {
+  skip_if_not_installed("purrr")
+
   purrr::walk(1:length(ll), function(i) {
     testthat::expect_equal(ll[[i]], vb[[names(ll)[i]]])
   })
@@ -8,6 +10,8 @@ same_vals_test <- function(vb, ll) {
 
 # vb has values with same class as ll
 same_val_classes_test <- function(vb, ll) {
+  skip_if_not_installed("purrr")
+
   purrr::walk(1:length(ll), function(i) {
     testthat::expect_equal(class(ll[[i]]), class(vb[[names(ll)[i]]]))
   })
@@ -99,11 +103,7 @@ testthat::test_that("throws error on NULL", {
   )
 })
 
-testthat::test_that("length() returns expected", {
-  ll <- list(a = 1, b = 2, c = 3)
-  vb <- varbundle(ll)
-  testthat::expect_equal(vb$length(), length(ll))
-})
+
 
 testthat::test_that("handles atomic vectors with > 1 items", {
   vec <- c("my", "dog", "has", "fleas")

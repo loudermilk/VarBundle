@@ -1,23 +1,52 @@
+#' VarBundle: A package for creating read-only variable bundles.
+#'
+#' @section VarBundle functions:
+#' Function \code{\link{varbundle}} - Creates VarBundle object from named list
+#' or data.frame.
+#'
+#' @docType package
+#' @name VarBundle
+#' @importFrom magrittr "%>%"
+#' @import dplyr
+#' @import crayon
+NULL
+
+
 #' @title Create bundle of variables.
 #'
-#' @description VarBundle objects are designed to store related
-#' read-only variable/value pairs that are accessed with the `$` operator
-#' like the attributes of a list (e.g., \code{vb$foobar}. Unlike a list,
-#' after a VarBundle object has been created new fields cannot be added,
-#' nor can existing field values be modified. VarBundle objects avoid the
-#' overhead of copy-on-modify and pass-by-value semantics.
+#' @description VarBundle objects store read-only variables in a list-like
+#' structure. Variable values can be accessed via the `$` operator
+#' (\code{vb$foobar}) or via field name(\code{vb[["foobar"]]}).
+#' After a VarBundle object has been created, new fields cannot be added
+#' and existing field values cannot be modified.
 #'
-#' VarBundle objects are particularly useful for storing information that
-#' needs to be accessed by multiple client functions while insuring information
-#' immutability and consistency across your code base.
+#' Field names can be accessed via \code{\link{field_names}}.
 #'
-#' @param x (list or data.frame) named list of var/val pairs (e.g., list(foo = 1))
+#' Simple VarBundle objects that only contain atomic, scalar values are
+#' useful for storing configuration information. The object method
+#' \code{$as.data.frame()} will return a data.frame version of the VarBundle.
+#' This can be persisted to disk and subsequently modified by the end user
+#' to change system parameters.
+#'
+#'
+#' @param x (list or data.frame)
 #' @return (VarBundle)
 #'
 #' @examples
-#' x <- 7
+#' # Access via $
 #' sales <- varbundle(list(min = 1, max = 10))
-#' if (x >= sales$min & x <= sales$max) "good" else "bad"
+#' sales$min
+#'
+#' # Access via name
+#' my_var <- field_names(sales)[1]
+#' sales[[my_var]]
+#'
+#' # Create data.frame
+#' df <- sales$as.data.frame()
+#'
+#' # Create VarBundle from data.frame
+#' corp_sales <- varbundle(df)
+#' class(corp_sales)
 #'
 #' @export
 #'
@@ -56,7 +85,7 @@ varbundle <- function(x) {
     VarBundle$set("active", mthd_name, eval(parse(text = mthd_def)))
   }
 
-  if(all_scalar_atomic) {
+  if (all_scalar_atomic) {
     create_df <- function(i) {
       var <- names(x)[i]
       val <- x[[i]]
@@ -70,10 +99,6 @@ varbundle <- function(x) {
   }
 
   ## PUBLIC --------------------------------------------------------------------
-
-  # Return number of read-only fields
-  VarBundle$set("public", "length", function() length(VarBundle$active))
-
 
 
   # Transform simple VarBundle to data.frame

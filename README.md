@@ -16,6 +16,7 @@ thresholds[["min"]] #1
 # Assignment throws error
 thresholds$min <- 25 # VarBundle fields are read only.
 
+# Cannot create new fields after object creation
 thesholds$foo <- 10 # Cannot add new fields to VarBundle
 ```
 The quickest way to learn about {VarBundle} is to install the package and read the vignette.
