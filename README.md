@@ -1,7 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-VarBundle <img src="inst/images/varbundle.png" align="right" />
-===============================================================
+VarBundle
+=========
+
+``` r
+knitr::include_graphics("inst/images/varbundle.png")
+```
+
+<img src="inst/images/varbundle.png" width="120px" />
 
 VarBundle supports defensive programming by making it easy for R developers to bundle conceptually related read-only variables in a named, list-like object of immutable constants.
 
