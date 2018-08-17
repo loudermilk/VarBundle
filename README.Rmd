@@ -16,7 +16,7 @@ library(glue)
 ```
 
 # VarBundle
-```{r, out.width = "120px"}
+```{r, out.width = "120px", echo = F}
 knitr::include_graphics("inst/images/varbundle.png")
 ```
 

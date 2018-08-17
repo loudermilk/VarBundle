@@ -3,11 +3,7 @@
 VarBundle
 =========
 
-``` r
-knitr::include_graphics("inst/images/varbundle.png")
-```
-
-<img src="inst/images/varbundle.png" width="120px" />
+<img src="inst/images/varbundle.png" width="120px" align="right"/>
 
 VarBundle supports defensive programming by making it easy for R developers to bundle conceptually related read-only variables in a named, list-like object of immutable constants.
 
