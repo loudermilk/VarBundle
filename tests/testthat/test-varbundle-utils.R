@@ -16,12 +16,15 @@ LIST_DF <- list(
       var <- df$var[i]
       val <- df$val[i]
       type <- df$type[i]
-      testthat::expect_equal(class(ll[[var]]), type)
+      info <- glue::glue("iteration = {i}")
+      testthat::expect_equal(class(ll[[var]]), type, info = info)
     })
   }
 )
 
 ## UNIT TESTS ------------------------------------------------------------------
+
+context("Testing VarBundle with data.frame constructor")
 
 testthat::test_that("simple case", {
 
@@ -39,9 +42,5 @@ testthat::test_that("simple case", {
 })
 
 
-testthat::test_that("field names", {
-  ll <- list(a = 1, b = 2, c = 3)
-  vb <- varbundle(ll)
-  testthat::expect_equal(field_names(vb), names(ll))
-})
+
 

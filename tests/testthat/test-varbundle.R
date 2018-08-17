@@ -4,7 +4,8 @@ same_vals_test <- function(vb, ll) {
   skip_if_not_installed("purrr")
 
   purrr::walk(1:length(ll), function(i) {
-    testthat::expect_equal(ll[[i]], vb[[names(ll)[i]]])
+    info <- glue::glue("iteration = {i}")
+    testthat::expect_equal(ll[[i]], vb[[names(ll)[i]]], info = info)
   })
 }
 
@@ -13,14 +14,25 @@ same_val_classes_test <- function(vb, ll) {
   skip_if_not_installed("purrr")
 
   purrr::walk(1:length(ll), function(i) {
-    testthat::expect_equal(class(ll[[i]]), class(vb[[names(ll)[i]]]))
+    info <- glue::glue("iteration = {i}")
+    testthat::expect_equal(class(ll[[i]]), class(vb[[names(ll)[i]]]), info = info)
   })
 }
 
-testthat::test_that("example_test", {
-  testthat::expect_true(TRUE)
+context("Testing classes of VarBundle")
+
+testthat::test_that("is R6", {
+  vb <- varbundle(list(a = 1))
+  testthat::expect_is(vb, "R6")
 })
 
+testthat::test_that("is VarBundle", {
+  vb <- varbundle(list(a = 1))
+  testthat::expect_is(vb, "VarBundle")
+})
+
+
+context("Testing VarBundle with list constructor")
 
 testthat::test_that("has same vals as list", {
   ll <- list(min = 100, sample_perc = 0.3, file = "bar", debug = FALSE)
@@ -40,6 +52,16 @@ testthat::test_that("has same var names as list", {
   vb <- varbundle(ll)
   testthat::expect_equal(sum(names(ll) %in% names(vb)), length(ll))
 })
+
+testthat::test_that("field names", {
+  ll <- list(a = 1, b = 2, c = 3)
+  vb <- varbundle(ll)
+  testthat::expect_identical(field_names(vb), names(ll))
+  testthat::expect_named(vb)
+})
+
+
+context("Testing errors thrown with list constructor")
 
 testthat::test_that("throws error on list w/ missing names", {
   ll <- list(100, sample_perc = 0.3, file = "bar", debug = FALSE)
@@ -67,26 +89,10 @@ testthat::test_that("throws error on non-unique names", {
 testthat::test_that("not list", {
   ll <- c(foo = 1, bar = 2, bar = 3)
   testthat::expect_error(vb <- varbundle(ll),
-    regexp = MSG$valid_x
+                         regexp = MSG$valid_x
   )
 })
 
-testthat::test_that("read only fields", {
-  ll <- list(foo = 1, bar = 2)
-  vb <- varbundle(ll)
-  testthat::expect_error(vb$foo <- 5,
-    regexp = MSG$read_only
-  )
-})
-
-
-testthat::test_that("handles NA as vals", {
-  ll <- list(foo = 1, bar = NA)
-  vb <- varbundle(ll)
-  testthat::expect_true(is.na(vb$bar))
-  same_vals_test(vb, ll)
-  same_val_classes_test(vb, ll)
-})
 
 testthat::test_that("throws error on empty list", {
   ll <- list()
@@ -103,6 +109,32 @@ testthat::test_that("throws error on NULL", {
   )
 })
 
+context("Testing throws error on mutation")
+
+testthat::test_that("read only fields", {
+  ll <- list(foo = 1, bar = 2)
+  vb <- varbundle(ll)
+  testthat::expect_error(vb$foo <- 5,
+                         regexp = MSG$read_only
+  )
+})
+
+testthat::test_that("can't add field", {
+  ll <- list(foo = 1, bar = 2)
+  vb <- varbundle(ll)
+  testthat::expect_error(vb$hello <- 5)
+})
+
+
+context("Testing VarBundle handles different element types")
+
+testthat::test_that("handles NA as vals", {
+  ll <- list(foo = 1, bar = NA)
+  vb <- varbundle(ll)
+  testthat::expect_true(is.na(vb$bar))
+  same_vals_test(vb, ll)
+  same_val_classes_test(vb, ll)
+})
 
 
 testthat::test_that("handles atomic vectors with > 1 items", {

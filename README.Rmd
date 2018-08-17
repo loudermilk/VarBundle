@@ -1,14 +1,27 @@
+---
+output:
+  github_document:
+    html_preview: false
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-VarBundle <img src="inst/images/varbundle.png" align="right" />
-===============================================================
 
-VarBundle supports defensive programming by making it easy for R developers to bundle conceptually related read-only variables in a named, list-like object of immutable constants.
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+library(glue)
+```
 
-Installation
-------------
+# VarBundle <img src="inst/images/varbundle.png" align="right" />
 
-``` r
+VarBundle supports defensive programming by making it easy for R developers to bundle conceptually related read-only variables in a named, list-like object of immutable constants. 
+
+## Installation  
+
+```{r installation, eval = FALSE}
 # Install the released version from CRAN:
 # Not yet available
 # install.packages("VarBundle")
@@ -18,25 +31,19 @@ Installation
 devtools::install_github("loudermilk/VarBundle")
 ```
 
-Usage
------
+## Usage  
 
 ##### VarBundle fields can be accessed like lists.
-
-``` r
+```{r}
 library(VarBundle)
 thresholds <- varbundle(list(min = 1, max = 100))
 
 # Read-only Access
 thresholds$max #100
-#> [1] 100
 thresholds[["min"]] #1
-#> [1] 1
 ```
-
 ##### But fields are read-only and new fields cannot be added after object creation.
-
-``` r
+```{r, eval=F, echo=T}
 # Assignment throws error
 thresholds$min <- 25 # VarBundle fields are read only.
 
@@ -46,12 +53,10 @@ thesholds$foo <- 10 # Cannot add new fields to VarBundle
 
 ##### The quickest way to learn about {VarBundle} is to read the vignette.
 
-``` r
+```{r}
 browseVignettes(package = "VarBundle")
-#> No vignettes found by browseVignettes(package = "VarBundle")
 ```
 
-Getting Help
-------------
+## Getting Help
 
 If you have a question, encounter a bug (or typo), or have a feature request, please submit an issue on GitHub.
