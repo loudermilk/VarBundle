@@ -12,8 +12,7 @@ Installation
 
 ``` r
 # Install the released version from CRAN:
-# Not yet available
-# install.packages("VarBundle")
+install.packages("VarBundle")
 
 # Install the development version from GitHub:
 # install.packages("devtools")
