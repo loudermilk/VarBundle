@@ -65,48 +65,36 @@ context("Testing errors thrown with list constructor")
 
 testthat::test_that("throws error on list w/ missing names", {
   ll <- list(100, sample_perc = 0.3, file = "bar", debug = FALSE)
-  testthat::expect_error(vb <- varbundle(ll),
-    regexp = MSG$all_names
-  )
+  testthat::expect_error(vb <- varbundle(ll))
 })
 
 testthat::test_that("throws error on list w/ no names", {
   ll <- list(100, 0.3, "bar", FALSE)
-  testthat::expect_error(vb <- varbundle(ll),
-    regexp = MSG$no_names
-  )
+  testthat::expect_error(vb <- varbundle(ll))
 })
 
 
 testthat::test_that("throws error on non-unique names", {
   ll <- list(foo = 1, bar = 2, bar = 3)
-  testthat::expect_error(vb <- varbundle(ll),
-    regexp = MSG$not_unique
-  )
+  testthat::expect_error(vb <- varbundle(ll))
 })
 
 
 testthat::test_that("not list", {
   ll <- c(foo = 1, bar = 2, bar = 3)
-  testthat::expect_error(vb <- varbundle(ll),
-                         regexp = MSG$valid_x
-  )
+  testthat::expect_error(vb <- varbundle(ll))
 })
 
 
 testthat::test_that("throws error on empty list", {
   ll <- list()
-  testthat::expect_error(vb <- varbundle(ll),
-    regexp = MSG$not_empty
-  )
+  testthat::expect_error(vb <- varbundle(ll))
 })
 
 
 testthat::test_that("throws error on NULL", {
   ll <- NULL
-  testthat::expect_error(vb <- varbundle(ll),
-    regexp = MSG$not_null
-  )
+  testthat::expect_error(vb <- varbundle(ll))
 })
 
 context("Testing throws error on mutation")

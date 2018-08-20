@@ -13,30 +13,38 @@ MSG <- list(
 )
 
 validate_x <- function(x) {
-  if (is.null(x)) {
-    stop(MSG$not_null)
-  }
-
-  if (sum(class(x) %in% c("list", "data.frame")) == 0) {
+  x %>%
+    assertive::assert_is_not_null()
+  if (sum(c("list", "data.frame") %in% class(x)) == 0) {
     stop(MSG$valid_x)
   }
+
 }
 
 
 validate_list <- function(ll) {
-  if (length(ll) == 0) {
-    stop(MSG$not_empty)
-  }
+  ll %>%
+    assertive::assert_is_non_empty() %>%
+    assertive::assert_has_names() %>%
+    names() %>%
+    assertive::assert_all_are_non_empty_character() %>%
+    assertive::assert_has_no_duplicates()
 
-  if (is.null(names(ll))) {
-    stop(MSG$no_names)
-  }
 
-  if ("" %in% names(ll)) {
-    stop(MSG$all_names)
-  }
 
-  if (sum(duplicated(names(ll))) > 0) {
-    stop(MSG$not_unique)
-  }
+  # if (length(ll) == 0) {
+  #   stop(MSG$not_empty)
+  # }
+  #
+  # if (is.null(names(ll))) {
+  #   stop(MSG$no_names)
+  # }
+  #
+  # if ("" %in% names(ll)) {
+  #   stop(MSG$all_names)
+  # }
+  #
+  # if (sum(duplicated(names(ll))) > 0) {
+  #   stop(MSG$not_unique)
+  # }
 }
