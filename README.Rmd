@@ -26,7 +26,6 @@ VarBundle supports defensive programming by making it easy for R developers to b
 
 ```{r installation, eval = FALSE}
 # Install the released version from CRAN:
-# Not yet available
 install.packages("VarBundle")
 
 # Install the development version from GitHub:
