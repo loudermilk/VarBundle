@@ -1,7 +1,7 @@
 Package: VarBundle
 Type: Package
 Title: Read-Only Variable Bundles
-Version: 0.3.0
+Version: 0.3.0.9000
 Author: Brandon C. Loudermilk
 Maintainer: Brandon C. Loudermilk <b.c.loudermilk@gmail.com>
 Description: Easily create list-like structures with constant, read-only 
