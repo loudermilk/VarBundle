@@ -6,6 +6,7 @@
 <img src="inst/images/varbundle.png" width="120px" />
 [![CRAN\_Download\_Badge](https://cranlogs.r-pkg.org/badges/VarBundle)](https://cran.rstudio.com/web/packages/VarBundle/index.html)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/VarBundle)](https://cran.r-project.org/package=VarBundle)
+
 VarBundle supports defensive programming by making it easy for R
 developers to bundle conceptually related read-only variables in a
 named, list-like object of immutable constants.
